@@ -2,8 +2,10 @@ version: '3.8'
 
 services:
   app:
-    image: php:8.2-fpm
     container_name: symfony_app
+    build:
+      context: .
+      dockerfile: Dockerfile
     working_dir: /var/www
     volumes:
       - .:/var/www
@@ -13,9 +15,6 @@ services:
       - db
     environment:
       DATABASE_URL: mysql://root:root@db:3306/symfony?serverVersion=8.0
-    build:
-      context: .
-      dockerfile: Dockerfile
 
   nginx:
     image: nginx:latest
