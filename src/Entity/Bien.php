@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Get;
+use App\Controller\BienController;
 use App\Repository\BienRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -16,6 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ApiResource(
     operations: [
         new GetCollection(security: "is_granted('ROLE_USER')"),
+        new GetCollection(security: "is_granted('ROLE_USER')", uriTemplate: '/biens/recherche/{id}', controller: BienController::class, name: 'get_recherche_adresse'),
         new Post(security: "is_granted('ROLE_USER')"),
         new Get(security: "is_granted('ROLE_USER') and object.getUsers() == user"),
         new Put(security: "is_granted('ROLE_USER') and object.users == user"),

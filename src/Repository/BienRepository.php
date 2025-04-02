@@ -16,28 +16,18 @@ class BienRepository extends ServiceEntityRepository
         parent::__construct($registry, Bien::class);
     }
 
-//    /**
-//     * @return Bien[] Returns an array of Bien objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('b.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Bien
-//    {
-//        return $this->createQueryBuilder('b')
-//            ->andWhere('b.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * @return Bien[] Returns an array of Bien objects
+     */
+    public function findByAdresseAndUser($value, $user): array
+    {
+        return $this->createQueryBuilder('b')
+            ->andWhere('b.users = :valuser')
+            ->setParameter('valuser', $user)
+            ->andWhere('b.adresse LIKE :val')
+            ->setParameter('val', '%' . $value . '%')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }
