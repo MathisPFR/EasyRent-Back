@@ -3,11 +3,26 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Get;
 use App\Repository\BienRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BienRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(security: "is_granted('ROLE_USER')"),
+        new Post(security: "is_granted('ROLE_USER')"),
+        new Get(security: "is_granted('ROLE_USER') and object.getUsers() == user"),
+        new Put(security: "is_granted('ROLE_USER') and object.users == user"),
+        new Patch(security: "is_granted('ROLE_USER') and object.users == user"),
+        new Delete(security: "is_granted('ROLE_USER') and object.users == user"),
+    ],
+)]
 class Bien
 {
     #[ORM\Id]
