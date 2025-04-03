@@ -7,6 +7,7 @@ api_platform:
             vary: ['Content-Type', 'Authorization', 'Origin']
     formats:
         json: ['application/json']
+        jsonld: ['application/ld+json']
 
     swagger:
         api_keys:
