@@ -15,6 +15,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+
+
 #[ORM\Entity(repositoryClass: BienRepository::class)]
 #[ApiResource(
     operations: [
@@ -27,9 +29,9 @@ use Doctrine\ORM\Mapping as ORM;
         ),
         new Post(security: "is_granted('ROLE_USER')"),
         new Get(security: "is_granted('ROLE_USER') and object.getUsers() == user"),
-        new Put(security: "is_granted('ROLE_USER') and object.users == user"),
-        new Patch(security: "is_granted('ROLE_USER') and object.users == user"),
-        new Delete(security: "is_granted('ROLE_USER') and object.users == user"),
+        new Put(security: "is_granted('ROLE_USER') and object.getUsers() == user"),
+        new Patch(security: "is_granted('ROLE_USER') and object.getUsers() == user"),
+        new Delete(security: "is_granted('ROLE_USER') and object.getUsers() == user"),
     ],
 )]
 class Bien
@@ -63,6 +65,9 @@ class Bien
      */
     #[ORM\OneToMany(targetEntity: Locataire::class, mappedBy: 'biens')]
     private Collection $locataires;
+
+    #[ORM\Column]
+    private ?bool $actif = null;
 
     public function __construct()
     {
@@ -172,6 +177,18 @@ class Bien
                 $locataire->setBiens(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isActif(): ?bool
+    {
+        return $this->actif;
+    }
+
+    public function setActif(bool $actif): static
+    {
+        $this->actif = $actif;
 
         return $this;
     }
