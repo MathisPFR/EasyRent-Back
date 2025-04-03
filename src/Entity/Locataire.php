@@ -61,9 +61,16 @@ class Locataire
     #[ORM\OneToMany(targetEntity: Paiement::class, mappedBy: 'locataire')]
     private Collection $paiements;
 
+    /**
+     * @var Collection<int, Document>
+     */
+    #[ORM\OneToMany(targetEntity: Document::class, mappedBy: 'locataire')]
+    private Collection $documents;
+
     public function __construct()
     {
         $this->paiements = new ArrayCollection();
+        $this->documents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -167,6 +174,36 @@ class Locataire
             // set the owning side to null (unless already changed)
             if ($paiement->getLocataire() === $this) {
                 $paiement->setLocataire(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Document>
+     */
+    public function getDocuments(): Collection
+    {
+        return $this->documents;
+    }
+
+    public function addDocument(Document $document): static
+    {
+        if (!$this->documents->contains($document)) {
+            $this->documents->add($document);
+            $document->setLocataire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDocument(Document $document): static
+    {
+        if ($this->documents->removeElement($document)) {
+            // set the owning side to null (unless already changed)
+            if ($document->getLocataire() === $this) {
+                $document->setLocataire(null);
             }
         }
 

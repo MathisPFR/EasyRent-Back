@@ -6,6 +6,7 @@ use ApiPlatform\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Metadata\Operation;
 use App\Entity\Bien;
+use App\Entity\Document;
 use App\Entity\Locataire;
 use App\Entity\Paiement;
 use Doctrine\ORM\QueryBuilder;
@@ -38,8 +39,8 @@ class CurrentUserExtension implements QueryCollectionExtensionInterface
             $queryBuilder->innerJoin(sprintf('%s.biens', $rootAlias), $joinAlias)
                 ->andWhere(sprintf('%s.users = :current_user', $joinAlias))
                 ->setParameter('current_user', $user);
-        } elseif (Paiement::class === $resourceClass) {
-            // Pour l'entité Paiement: joindre avec Locataire puis avec Bien et filtrer par l'utilisateur du bien
+        } elseif (Paiement::class === $resourceClass || Document::class === $resourceClass) {
+            // Pour les entités Paiement et Document: joindre avec Locataire puis avec Bien et filtrer
             $locataireAlias = $queryNameGenerator->generateJoinAlias('locataire');
             $bienAlias = $queryNameGenerator->generateJoinAlias('biens');
             
