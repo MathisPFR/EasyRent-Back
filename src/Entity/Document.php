@@ -23,9 +23,9 @@ use Doctrine\ORM\Mapping as ORM;
             securityPostDenormalizeMessage: "Vous ne pouvez pas créer un locataire pour un bien qui ne vous appartient pas."
         ),
         new Get(security: "is_granted('ROLE_USER') and object.getLocataire().getBiens().getUsers() == user"),
-        new Put(security: "is_granted('ROLE_USER') object.getLocataire().getBiens().getUsers() == user"),
-        new Patch(security: "is_granted('ROLE_USER') object.getLocataire().getBiens().getUsers() == user"),
-        new Delete(security: "is_granted('ROLE_USER') object.getLocataire().getBiens().getUsers() == user"),
+        new Put(security: "is_granted('ROLE_USER') and object.getLocataire().getBiens().getUsers() == user"),
+        new Patch(security: "is_granted('ROLE_USER') and object.getLocataire().getBiens().getUsers() == user"),
+        new Delete(security: "is_granted('ROLE_USER') and object.getLocataire().getBiens().getUsers() == user"),
     ],
 )]
 class Document

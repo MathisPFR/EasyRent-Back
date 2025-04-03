@@ -22,12 +22,12 @@ use Doctrine\ORM\Mapping as ORM;
         new Post(
             security: "is_granted('ROLE_USER')",
             securityPostDenormalize: "is_granted('ROLE_USER') and object.getBiens() !== null and object.getBiens().getUsers() == user",
-            securityPostDenormalizeMessage: "Vous ne pouvez pas créer un locataire pour un bien qui ne vous appartient pas."
+            securityPostDenormalizeMessage: "Vous ne pouvez pas créer un locataire pour un bien qui ne vous appartient pas.",
         ),
         new Get(security: "is_granted('ROLE_USER') and object.getBiens().getUsers() == user"),
-        new Put(security: "is_granted('ROLE_USER') object.getBiens().getUsers() == user"),
-        new Patch(security: "is_granted('ROLE_USER') object.getBiens().getUsers() == user"),
-        new Delete(security: "is_granted('ROLE_USER') object.getBiens().getUsers() == user"),
+        new Put(security: "is_granted('ROLE_USER') and object.getBiens().getUsers() == user"),
+        new Patch(security: "is_granted('ROLE_USER') and object.getBiens().getUsers() == user"),
+        new Delete(security: "is_granted('ROLE_USER') and object.getBiens().getUsers() == user"),
     ],
 )]
 class Locataire
@@ -58,13 +58,13 @@ class Locataire
     /**
      * @var Collection<int, Paiement>
      */
-    #[ORM\OneToMany(targetEntity: Paiement::class, mappedBy: 'locataire')]
+    #[ORM\OneToMany(targetEntity: Paiement::class, mappedBy: 'locataire', orphanRemoval: true)]
     private Collection $paiements;
 
     /**
      * @var Collection<int, Document>
      */
-    #[ORM\OneToMany(targetEntity: Document::class, mappedBy: 'locataire')]
+    #[ORM\OneToMany(targetEntity: Document::class, mappedBy: 'locataire', orphanRemoval: true)]
     private Collection $documents;
 
     public function __construct()
