@@ -11,13 +11,20 @@ use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Get;
 use App\Controller\BienController;
 use App\Repository\BienRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: BienRepository::class)]
 #[ApiResource(
     operations: [
         new GetCollection(security: "is_granted('ROLE_USER')"),
-        new GetCollection(security: "is_granted('ROLE_USER')", uriTemplate: '/biens/recherche/{id}', controller: BienController::class, name: 'get_recherche_adresse'),
+        new GetCollection(
+            security: "is_granted('ROLE_USER')",
+            uriTemplate: '/biens/recherche/{id}',
+            controller: BienController::class,
+            name: 'get_recherche_adresse',
+        ),
         new Post(security: "is_granted('ROLE_USER')"),
         new Get(security: "is_granted('ROLE_USER') and object.getUsers() == user"),
         new Put(security: "is_granted('ROLE_USER') and object.users == user"),
@@ -50,6 +57,17 @@ class Bien
     #[ORM\ManyToOne(inversedBy: 'biens')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $users = null;
+
+    /**
+     * @var Collection<int, Locataire>
+     */
+    #[ORM\OneToMany(targetEntity: Locataire::class, mappedBy: 'biens')]
+    private Collection $locataires;
+
+    public function __construct()
+    {
+        $this->locataires = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -124,6 +142,36 @@ class Bien
     public function setUsers(?User $users): static
     {
         $this->users = $users;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Locataire>
+     */
+    public function getLocataires(): Collection
+    {
+        return $this->locataires;
+    }
+
+    public function addLocataire(Locataire $locataire): static
+    {
+        if (!$this->locataires->contains($locataire)) {
+            $this->locataires->add($locataire);
+            $locataire->setBiens($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLocataire(Locataire $locataire): static
+    {
+        if ($this->locataires->removeElement($locataire)) {
+            // set the owning side to null (unless already changed)
+            if ($locataire->getBiens() === $this) {
+                $locataire->setBiens(null);
+            }
+        }
 
         return $this;
     }
