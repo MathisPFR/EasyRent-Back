@@ -10,12 +10,12 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Get;
 use App\Controller\BienController;
+use App\Controller\BienPatchController;
 use App\Repository\BienRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-
-
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: BienRepository::class)]
 #[ApiResource(
@@ -30,43 +30,57 @@ use Doctrine\ORM\Mapping as ORM;
         new Post(security: "is_granted('ROLE_USER')"),
         new Get(security: "is_granted('ROLE_USER') and object.getUsers() == user"),
         new Put(security: "is_granted('ROLE_USER') and object.getUsers() == user"),
-        new Patch(security: "is_granted('ROLE_USER') and object.getUsers() == user"),
+        new Patch(
+            security: "is_granted('ROLE_USER') and object.getUsers() == user",
+            controller: BienPatchController::class,
+            name: 'app_bien_patch',
+        ),
         new Delete(security: "is_granted('ROLE_USER') and object.getUsers() == user"),
     ],
+    normalizationContext: ['groups' => ['bien:read']],
 )]
 class Bien
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['bien:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['bien:read'])]
     private ?string $titre = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['bien:read'])]
     private ?string $adresse = null;
 
     #[ORM\Column]
+    #[Groups(['bien:read'])]
     private ?float $surface = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['bien:read'])]
     private ?string $type = null;
 
     #[ORM\Column]
+    #[Groups(['bien:read'])]
     private ?float $loyer = null;
 
     #[ORM\ManyToOne(inversedBy: 'biens')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['bien:read'])]
     private ?User $users = null;
 
     /**
      * @var Collection<int, Locataire>
      */
     #[ORM\OneToMany(targetEntity: Locataire::class, mappedBy: 'biens')]
+    #[Groups(['bien:read'])]
     private Collection $locataires;
 
     #[ORM\Column]
+    #[Groups(['bien:read'])]
     private ?bool $actif = null;
 
     public function __construct()
