@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Get;
+use App\Controller\TotalPaiementAnneeController;
 use App\Repository\PaiementRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -20,12 +21,18 @@ use Doctrine\ORM\Mapping as ORM;
         new Post(
             security: "is_granted('ROLE_USER')",
             securityPostDenormalize: "is_granted('ROLE_USER') and object.getLocataire() !== null and object.getLocataire().getBiens().getUsers() == user",
-            securityPostDenormalizeMessage: "Vous ne pouvez pas créer un locataire pour un bien qui ne vous appartient pas."
+            securityPostDenormalizeMessage: "Vous ne pouvez pas créer de paiement pour un locataire qui ne vous appartient pas."
         ),
         new Get(security: "is_granted('ROLE_USER') and object.getLocataire().getBiens().getUsers() == user"),
         new Put(security: "is_granted('ROLE_USER') and object.getLocataire().getBiens().getUsers() == user"),
         new Patch(security: "is_granted('ROLE_USER') and object.getLocataire().getBiens().getUsers() == user"),
         new Delete(security: "is_granted('ROLE_USER') and object.getLocataire().getBiens().getUsers() == user"),
+        new Get(
+            security: "is_granted('ROLE_USER') and object.getUsers() == user",
+            uriTemplate: '/dashboard/total-paiement-annee',
+            controller: TotalPaiementAnneeController::class,
+            name: 'app_total_paiement_annee',
+        ),
     ],
 )]
 class Paiement
@@ -41,8 +48,6 @@ class Paiement
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $datePaiement = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $moisConcerne = null;
 
     #[ORM\Column(length: 255)]
     private ?string $status = null;
@@ -79,17 +84,6 @@ class Paiement
         return $this;
     }
 
-    public function getMoisConcerne(): ?string
-    {
-        return $this->moisConcerne;
-    }
-
-    public function setMoisConcerne(?string $moisConcerne): static
-    {
-        $this->moisConcerne = $moisConcerne;
-
-        return $this;
-    }
 
     public function getStatus(): ?string
     {
