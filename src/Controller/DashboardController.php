@@ -24,7 +24,10 @@ final class DashboardController extends AbstractController
         $user = $this->security->getUser();
         $paiementAnne = $this->paiementRepository->findTotalPaiementAnnee($user);
         $paiementMois = $this->paiementRepository->findTotalPaiementMoisAnnee($user);
+        $paiements = $this->paiementRepository->findStatusPaiement($user);
         $biens = $this->bienRepository->findBienbyUserActif($user);
+
+
 
         $bienActif = 0;
         $bienLoue = 0;
@@ -43,14 +46,40 @@ final class DashboardController extends AbstractController
             }
         }
 
+
+        $paiementPaye = 0;
+        $paiementAttente = 0;
+        $paiementRetard = 0;
+
+        foreach ($paiements as $paiement) {
+
+            if (strtolower($paiement->getStatus()) === "paye") {
+                $paiementPaye++;
+            }
+            if (strtolower($paiement->getStatus()) === "attente") {
+                $paiementAttente++;
+            }
+            if (strtolower($paiement->getStatus()) === "retard") {
+                $paiementRetard++;
+            }
+        }
+
         $data = [
-            "paiementAnne" => $paiementAnne,
-            "paiementMois" => $paiementMois,
+            'paiements' => [
+                "paiementAnne" => $paiementAnne,
+                "paiementMois" => $paiementMois,
+            ],
             "biens" => [
                 "bienActif" => $bienActif,
                 "bienLoue" => $bienLoue,
                 "bienIncactif" => $bienInactif,
             ],
+            "loyers" => [
+                "loyerPaye" => $paiementPaye,
+                "loyerAttente" => $paiementAttente,
+                "loyerRetard" => $paiementRetard,
+            ],
+
 
         ];
 

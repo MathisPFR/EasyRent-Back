@@ -96,5 +96,29 @@ class PaiementRepository extends ServiceEntityRepository
         return $queryBuilder->getQuery()->getSingleScalarResult();
     }
 
+
+
+    public function findStatusPaiement($user)
+    {
+        // Créer le QueryBuilder
+        $queryBuilder = $this->createQueryBuilder('p');
+        $rootAlias = $queryBuilder->getRootAliases()[0];
+
+        // Définir des alias explicites
+        $locataireAlias = 'l';
+        $bienAlias = 'b';
+
+
+
+        $queryBuilder
+            ->leftJoin(sprintf('%s.locataire', $rootAlias), $locataireAlias)
+            ->leftJoin(sprintf('%s.biens', $locataireAlias), $bienAlias)
+            ->andWhere(sprintf('%s.users = :current_user', $bienAlias))
+            ->setParameter('current_user', $user);
+           
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
     
 }
