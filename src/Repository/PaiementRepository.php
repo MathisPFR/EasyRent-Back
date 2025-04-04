@@ -33,22 +33,23 @@ class PaiementRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    public function findTotalPaiementAnnee($user) {
+    public function findTotalPaiementAnnee($user)
+    {
         // Créer le QueryBuilder
         $queryBuilder = $this->createQueryBuilder('p');
         $rootAlias = $queryBuilder->getRootAliases()[0];
-        
+
         // Définir des alias explicites
         $locataireAlias = 'l';
         $bienAlias = 'b';
-        
+
         // Année courante
         $anneeActuelle = date('Y');
-        
+
         // Dates de début et fin de l'année en cours
         $dateDebut = new \DateTime($anneeActuelle . '-01-01');
         $dateFin = new \DateTime($anneeActuelle . '-12-31');
-        
+
         $queryBuilder
             ->select('SUM(' . $rootAlias . '.montant) as totalPaiement')
             ->leftJoin(sprintf('%s.locataire', $rootAlias), $locataireAlias)
@@ -58,29 +59,30 @@ class PaiementRepository extends ServiceEntityRepository
             ->setParameter('current_user', $user)
             ->setParameter('debut', $dateDebut)
             ->setParameter('fin', $dateFin);
-        
+
         // On ne fait pas de GROUP BY puisqu'on ne renvoie que l'année en cours
-        
+
         return $queryBuilder->getQuery()->getSingleScalarResult();
     }
 
-    public function findTotalPaiementMoisAnnee($user) {
+    public function findTotalPaiementMoisAnnee($user)
+    {
         // Créer le QueryBuilder
         $queryBuilder = $this->createQueryBuilder('p');
         $rootAlias = $queryBuilder->getRootAliases()[0];
-        
+
         // Définir des alias explicites
         $locataireAlias = 'l';
         $bienAlias = 'b';
-        
+
         // Mois et année courants
         $moisActuel = date('m');
         $anneeActuelle = date('Y');
-        
+
         // Dates de début et fin du mois en cours
         $dateDebut = new \DateTime($anneeActuelle . '-' . $moisActuel . '-01');
         $dateFin = new \DateTime($anneeActuelle . '-' . $moisActuel . '-' . date('t'));
-        
+
         $queryBuilder
             ->select('SUM(' . $rootAlias . '.montant) as totalPaiement')
             ->leftJoin(sprintf('%s.locataire', $rootAlias), $locataireAlias)
@@ -90,7 +92,33 @@ class PaiementRepository extends ServiceEntityRepository
             ->setParameter('current_user', $user)
             ->setParameter('debut', $dateDebut)
             ->setParameter('fin', $dateFin);
-        
+
         return $queryBuilder->getQuery()->getSingleScalarResult();
-    } 
+    }
+
+
+
+    public function findStatusPaiement($user)
+    {
+        // Créer le QueryBuilder
+        $queryBuilder = $this->createQueryBuilder('p');
+        $rootAlias = $queryBuilder->getRootAliases()[0];
+
+        // Définir des alias explicites
+        $locataireAlias = 'l';
+        $bienAlias = 'b';
+
+
+
+        $queryBuilder
+            ->leftJoin(sprintf('%s.locataire', $rootAlias), $locataireAlias)
+            ->leftJoin(sprintf('%s.biens', $locataireAlias), $bienAlias)
+            ->andWhere(sprintf('%s.users = :current_user', $bienAlias))
+            ->setParameter('current_user', $user);
+           
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    
 }

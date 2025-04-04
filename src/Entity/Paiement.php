@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Get;
+use App\Controller\DashboardController;
 use App\Controller\TotalPaiementAnneeController;
 use App\Repository\PaiementRepository;
 use Doctrine\DBAL\Types\Types;
@@ -29,8 +30,8 @@ use Doctrine\ORM\Mapping as ORM;
         new Delete(security: "is_granted('ROLE_USER') and object.getLocataire().getBiens().getUsers() == user"),
         new Get(
             security: "is_granted('ROLE_USER') and object.getUsers() == user",
-            uriTemplate: '/dashboard/total-paiement-annee',
-            controller: TotalPaiementAnneeController::class,
+            uriTemplate: '/dashboard',
+            controller: DashboardController::class,
             name: 'app_total_paiement_annee',
         ),
     ],
