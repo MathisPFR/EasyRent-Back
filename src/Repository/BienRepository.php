@@ -30,4 +30,17 @@ class BienRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+
+    public function findBienbyUserActif($user)
+    {
+
+        $queryBuilder = $this->createQueryBuilder('b');
+        $rootAlias = $queryBuilder->getRootAliases()[0];
+
+        $queryBuilder->andWhere(sprintf('%s.users = :user', $rootAlias))
+            ->setParameter('user', $user);
+
+        
+        return $queryBuilder->getQuery()->getResult();
+    }
 }
