@@ -75,11 +75,4 @@ networks:
 volumes:
   db_data:
 
-frontend:
-    container_name: react_front
-    build:
-      context: ../EasyRentFront
-      dockerfile: Dockerfile
-    ports: "3000:80"
-    networks: symfony
-    depends_on: app
+
